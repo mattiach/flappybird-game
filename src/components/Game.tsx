@@ -22,6 +22,14 @@ export default component$(() => {
   const pipes = useSignal<Pipe[]>([]);
 
   const handleJump = $(() => {
+    const audio = document.getElementById('bg-music') as HTMLAudioElement | null;
+    if (audio && audio.paused) {
+      audio.volume = 0.5;
+      audio.play().catch((err) => {
+        console.warn('Audio play failed:', err);
+      });
+    }
+
     if (!gameStarted.value || gameOver.value) {
       gameStarted.value = true;
       gameOver.value = false;
@@ -33,6 +41,7 @@ export default component$(() => {
       birdVelocity.value = settings.jumpStrength;
     }
   });
+
 
   useVisibleTask$(({ cleanup }) => {
     const keyListener = (e: KeyboardEvent) => {
@@ -182,17 +191,31 @@ export default component$(() => {
           ))}
 
           {/* Score */}
-          <div class="absolute top-4 left-0 right-0 text-center">
+          <div class="absolute top-8 left-0 right-0 text-center">
             <span class="text-4xl font-bold text-white drop-shadow-lg">
               {score.value}
             </span>
           </div>
 
+          {/* Background music */}
+          <audio id="bg-music" src="/music/background-music.mp3" loop hidden />
+
           {/* Start screen */}
           {!gameStarted.value && <GameStartScreen handleJump={handleJump} />}
 
           {/* Game Over screen */}
-          {gameOver.value && <GameOverScreen handleJump={handleJump} score={score.value} />}
+          {gameOver.value && (
+            <>
+              <Image
+                src="/images/settings.svg"
+                alt="Settings"
+                width={40}
+                height={40}
+                class="absolute bottom-3 right-4 z-50"
+              />
+              <GameOverScreen handleJump={handleJump} score={score.value} />
+            </>
+          )}
         </div>
       </div>
     </>
