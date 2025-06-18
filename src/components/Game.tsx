@@ -1,5 +1,4 @@
 import {
-  $,
   component$,
   useSignal,
   useTask$,
@@ -8,10 +7,12 @@ import {
 import { Image } from '@unpic/qwik';
 import type { Hitbox, Pipe } from '@/interfaces/const';
 import { settings } from '@/settings/game.settings';
+import { handleJumpFn, keyListenerFn, startGameFn } from '@/functions/const';
 
 // components
 import GameOverScreen from '@/components/GameOverScreen';
 import GameStartScreen from '@/components/GameStartScreen';
+import GameScore from '@/components/GameScore';
 
 export default component$(() => {
   const gameStarted = useSignal(false);
@@ -21,38 +22,40 @@ export default component$(() => {
   const birdVelocity = useSignal(0);
   const pipes = useSignal<Pipe[]>([]);
 
-  const handleJump = $(() => {
-    const audio = document.getElementById('bg-music') as HTMLAudioElement | null;
-    if (audio && audio.paused) {
-      audio.volume = 0.5;
-      audio.play().catch((err) => {
-        console.warn('Audio play failed:', err);
-      });
-    }
+  // Function to start the game
+  const startGame = startGameFn(
+    gameStarted,
+    gameOver,
+    score,
+    birdPosition,
+    birdVelocity,
+    pipes,
+    'bg-music' // Html ID for background music
+  );
 
-    if (!gameStarted.value || gameOver.value) {
-      gameStarted.value = true;
-      gameOver.value = false;
-      score.value = 0;
-      birdPosition.value = 150;
-      birdVelocity.value = 0;
-      pipes.value = [];
-    } else {
-      birdVelocity.value = settings.jumpStrength;
-    }
-  });
+  // Function to handle jump action of the bird
+  const handleJump = handleJumpFn(
+    gameStarted,
+    gameOver,
+    birdVelocity
+  );
 
+  // Function to handle key events for starting the game and jumping
+  const keyListener = keyListenerFn(
+    gameStarted,
+    startGame,
+    gameOver,
+    birdVelocity
+  );
 
+  // Add event listeners for keydown events
   useVisibleTask$(({ cleanup }) => {
-    const keyListener = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        handleJump();
-      }
-    };
+    window.focus();
     window.addEventListener('keydown', keyListener);
     cleanup(() => window.removeEventListener('keydown', keyListener));
   });
 
+  // Game loop and logic
   useTask$(({ track }) => {
     track(() => gameStarted.value);
     track(() => gameOver.value);
@@ -62,6 +65,7 @@ export default component$(() => {
 
     if (!gameStarted.value || gameOver.value) return;
 
+    // This const is used to control the game loop, music, and game logic
     const interval = setInterval(() => {
       birdVelocity.value += settings.gravity;
       birdPosition.value += birdVelocity.value;
@@ -88,12 +92,11 @@ export default component$(() => {
 
       const Hitbox: Hitbox = {
         top: birdPosition.value,
-        bottom: birdPosition.value + 40, // bird height
+        bottom: birdPosition.value + 40,
         left: 100,
-        right: 100 + 40, // bird width
+        right: 100 + 40,
       };
 
-      // Check collision with top and bottom
       if (Hitbox.top <= 0 || Hitbox.bottom >= 600) {
         gameOver.value = true;
         clearInterval(interval);
@@ -101,7 +104,6 @@ export default component$(() => {
       }
 
       for (const pipe of pipes.value) {
-        // Collisione con pipe
         const withinX =
           Hitbox.right > pipe.x && Hitbox.left < pipe.x + settings.pipeWidth;
         const hitTop = Hitbox.top < pipe.topHeight;
@@ -113,14 +115,20 @@ export default component$(() => {
           return;
         }
 
-        // Score increment
         if (!pipe.passed && pipe.x + settings.pipeWidth < Hitbox.left) {
           pipe.passed = true;
           score.value += 1;
+
+          const pointSound = document.getElementById('point-sound') as HTMLAudioElement | null;
+          if (pointSound) {
+            pointSound.currentTime = 0;
+            pointSound.play().catch((err) => {
+              console.warn('Point sound play failed:', err);
+            });
+          }
         }
       }
     }, 20);
-
     return () => clearInterval(interval);
   });
 
@@ -131,32 +139,37 @@ export default component$(() => {
           class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
           onClick$={handleJump}
         >
-          {/* Clouds */}
-          <div>
-            <Image
-              src="/images/cloud.png"
-              alt="Cloud"
-              width={130}
-              height={130}
-              class="absolute right-10 top-24 opacity-50"
-            />
-            <Image
-              src="/images/cloud.png"
-              alt="Cloud"
-              width={100}
-              height={100}
-              class="absolute left-6 top-7 opacity-50"
-            />
-          </div>
+          {/* Game Logo */}
+          <Image
+            src="/images/logo.png"
+            alt="Flappy Bird Logo"
+            width={180}
+            height={180}
+            class="absolute top-2 left-1/2 transform -translate-x-1/2 z-50"
+          />
 
-          {/* Ground */}
-          <div class="absolute bottom-0 w-full h-14 bg-green-800"></div>
+          {/* Clouds */}
+          <Image
+            src="/images/cloud.png"
+            alt="Cloud"
+            width={130}
+            height={130}
+            class="absolute right-8 top-24 opacity-50"
+          />
+          <Image
+            src="/images/cloud.png"
+            alt="Cloud"
+            width={90}
+            height={90}
+            class="absolute left-6 top-7 opacity-50"
+          />
 
           {/* Bird */}
-          <div class={`absolute w-40 h-40 left-[100px]`} style={{ top: `${birdPosition.value}px` }}>
+          <div class="absolute w-40 h-40 left-[100px]" style={{ top: `${birdPosition.value}px` }}>
             <Image
               src="/images/blue-bird.png"
               alt="Flappy Bird"
+              class={`${gameOver.value ? 'z-0' : 'z-50'}`}
               width={40}
               height={40}
             />
@@ -190,20 +203,13 @@ export default component$(() => {
             </div>
           ))}
 
-          {/* Score */}
-          <div class="absolute top-8 left-0 right-0 text-center">
-            <span class="text-4xl font-bold text-white drop-shadow-lg">
-              {score.value}
-            </span>
-          </div>
-
-          {/* Background music */}
-          <audio id="bg-music" src="/music/background-music.mp3" loop hidden />
+          {/* Game score shown during the game */}
+          <GameScore score={score} />
 
           {/* Start screen */}
-          {!gameStarted.value && <GameStartScreen handleJump={handleJump} />}
+          {!gameStarted.value && <GameStartScreen onStart={startGame} />}
 
-          {/* Game Over screen */}
+          {/* Game over screen */}
           {gameOver.value && (
             <>
               <Image
@@ -211,11 +217,15 @@ export default component$(() => {
                 alt="Settings"
                 width={40}
                 height={40}
-                class="absolute bottom-3 right-4 z-50"
+                class="absolute bottom-3 right-4 z-50 hover:scale-110 transition-transform duration-200 cursor-pointer"
               />
-              <GameOverScreen handleJump={handleJump} score={score.value} />
+              <GameOverScreen onRestart={startGame} score={score.value} />
             </>
           )}
+
+          {/* Background music and sound effects */}
+          <audio id="bg-music" src="/music/background-music.mp3" loop hidden />
+          <audio id="point-sound" src="/music/coin-effect.mp3" hidden volume={0.2} />
         </div>
       </div>
     </>
