@@ -4,7 +4,7 @@ import Game from '@/components/Game';
 export default component$(() => {
   return (
     <>
-      <main class="min-h-screen w-full bg-[var(--fb-cyan)] flex justify-center items-center">
+      <main class="min-h-screen w-full flex justify-center items-center bg-gradient-to-b from-[var(--fb-cyan)] from-60% to-[var(--fb-yellow)] to-100%">
         <div class="relative w-[500px] min-h-screen">
           <Game />
         </div>
