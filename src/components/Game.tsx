@@ -13,6 +13,7 @@ import { handleJumpFn, keyListenerFn, startGameFn } from '@/functions/const';
 import GameOverScreen from '@/components/GameOverScreen';
 import GameStartScreen from '@/components/GameStartScreen';
 import GameScore from '@/components/GameScore';
+import PipeComponent from '@/components/PipeComponent';
 
 export default component$(() => {
   const gameStarted = useSignal(false);
@@ -134,7 +135,7 @@ export default component$(() => {
 
   return (
     <>
-      <div class="flex flex-col items-center justify-center bg-[var(--fb-cyan)] overflow-y-hidden h-screen">
+      <div class="flex flex-col items-center justify-center overflow-y-hidden h-screen">
         <div
           class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
           onClick$={handleJump}
@@ -178,28 +179,7 @@ export default component$(() => {
           {/* Pipes */}
           {pipes.value.map((pipe, index) => (
             <div key={index}>
-              <div
-                class="absolute bg-green-600 border-2 border-green-700"
-                style={{
-                  left: `${pipe.x}px`,
-                  top: '0px',
-                  width: `${settings.pipeWidth}px`,
-                  height: `${pipe.topHeight}px`,
-                }}
-              >
-                <div class="absolute bottom-0 left-0 right-0 h-4 bg-green-600"></div>
-              </div>
-              <div
-                class="absolute bg-green-600 border-2 border-green-700"
-                style={{
-                  left: `${pipe.x}px`,
-                  top: `${pipe.bottomY}px`,
-                  width: `${settings.pipeWidth}px`,
-                  height: `${600 - pipe.bottomY}px`,
-                }}
-              >
-                <div class="absolute top-0 left-0 right-0 h-4 bg-green-600"></div>
-              </div>
+              <PipeComponent {...pipe} />
             </div>
           ))}
 
