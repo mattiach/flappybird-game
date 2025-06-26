@@ -238,7 +238,7 @@ export default component$(() => {
 
         {/* Background music and sound effects */}
         <audio id="bg-music" src="/music/background-music.mp3" loop hidden />
-        <audio id="point-sound" src="/music/coin-effect.mp3" hidden volume={0.2} />
+        <audio id="point-sound" src="/music/coin-effect.mp3" hidden volume={0.05} />
       </div>
     </>
   );

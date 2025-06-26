@@ -17,7 +17,7 @@ export default component$<GameStartScreenProps>(({ onStart, onSelectCharacter })
               class="px-4 py-2 bg-blue-400 rounded-full font-bold hover:bg-blue-500 transition-colors duration-200"
               onClick$={onSelectCharacter}
             >
-              Choose Character
+              Select Character
             </button>
             <button
               class="px-4 py-2 bg-yellow-400 rounded-full font-bold hover:bg-yellow-500 transition-colors duration-200"
