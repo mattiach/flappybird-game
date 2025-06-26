@@ -25,7 +25,7 @@ export default component$(() => {
   const selectedBird = useSignal("/images/blue-bird.png");
   const showCharacterSelection = useSignal(false);
 
-  // Function to start the game 
+  // Function to start the game
   const startGame = startGameFn(
     gameStarted,
     gameOver,
@@ -33,7 +33,7 @@ export default component$(() => {
     birdPosition,
     birdVelocity,
     pipes,
-    "bg-music" // Html ID for background music
+    "bg-music", // Html ID for background music
   );
 
   // Function to handle jump action of the bird
@@ -44,7 +44,7 @@ export default component$(() => {
     gameStarted,
     startGame,
     gameOver,
-    birdVelocity
+    birdVelocity,
   );
 
   // Add event listeners for keydown events
@@ -115,7 +115,7 @@ export default component$(() => {
           pipe.passed = true;
           score.value += 1;
           const pointSound = document.getElementById(
-            "point-sound"
+            "point-sound",
           ) as HTMLAudioElement | null;
           if (pointSound) {
             pointSound.currentTime = 0;
@@ -130,7 +130,7 @@ export default component$(() => {
   });
 
   return (
-    <div class="relative w-[800px] h-[600px] bg-sky-400 overflow-hidden mx-auto select-none">
+    <div class="relative w-[800px] h-[600px] bg-sky-400 overflow-hidden mx-auto select-none border-4 border-white rounded-lg shadow-lg">
       {/* Background music */}
       <audio id="bg-music" src="/sounds/bg-music.mp3" loop />
       {/* Point sound */}
@@ -193,5 +193,4 @@ export default component$(() => {
       )}
     </div>
   );
-}
-);
+});
