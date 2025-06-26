@@ -1,4 +1,5 @@
 import {
+  $,
   component$,
   useSignal,
   useTask$,
@@ -8,12 +9,11 @@ import { Image } from "@unpic/qwik";
 import type { Hitbox, Pipe } from "@/interfaces/const";
 import { settings } from "@/settings/game.settings";
 import { handleJumpFn, keyListenerFn, startGameFn } from "@/functions/const";
-
-// components
 import GameOverScreen from "@/components/GameOverScreen";
 import GameStartScreen from "@/components/GameStartScreen";
 import GameScore from "@/components/GameScore";
 import PipeComponent from "@/components/PipeComponent";
+import CharacterSelection from "@/components/CharacterSelection";
 
 export default component$(() => {
   const gameStarted = useSignal(false);
@@ -22,8 +22,10 @@ export default component$(() => {
   const birdPosition = useSignal(250);
   const birdVelocity = useSignal(0);
   const pipes = useSignal<Pipe[]>([]);
+  const selectedBird = useSignal("/images/blue-bird.png");
+  const showCharacterSelection = useSignal(false);
 
-  // Function to start the game
+  // Function to start the game 
   const startGame = startGameFn(
     gameStarted,
     gameOver,
@@ -31,7 +33,7 @@ export default component$(() => {
     birdPosition,
     birdVelocity,
     pipes,
-    "bg-music", // Html ID for background music
+    "bg-music" // Html ID for background music
   );
 
   // Function to handle jump action of the bird
@@ -42,7 +44,7 @@ export default component$(() => {
     gameStarted,
     startGame,
     gameOver,
-    birdVelocity,
+    birdVelocity
   );
 
   // Add event listeners for keydown events
@@ -66,7 +68,6 @@ export default component$(() => {
     const interval = setInterval(() => {
       birdVelocity.value += settings.gravity;
       birdPosition.value += birdVelocity.value;
-
       pipes.value = pipes.value
         .map((pipe) => ({ ...pipe, x: pipe.x - settings.pipeSpeed }))
         .filter((pipe) => pipe.x + settings.pipeWidth > 0);
@@ -105,19 +106,16 @@ export default component$(() => {
           Hitbox.right > pipe.x && Hitbox.left < pipe.x + settings.pipeWidth;
         const hitTop = Hitbox.top < pipe.topHeight;
         const hitBottom = Hitbox.bottom > pipe.bottomY;
-
         if (withinX && (hitTop || hitBottom)) {
           gameOver.value = true;
           clearInterval(interval);
           return;
         }
-
         if (!pipe.passed && pipe.x + settings.pipeWidth < Hitbox.left) {
           pipe.passed = true;
           score.value += 1;
-
           const pointSound = document.getElementById(
-            "point-sound",
+            "point-sound"
           ) as HTMLAudioElement | null;
           if (pointSound) {
             pointSound.currentTime = 0;
@@ -132,114 +130,68 @@ export default component$(() => {
   });
 
   return (
-    <>
-      <div
-        class="flex flex-col items-center justify-center overflow-y-hidden h-screen"
-        data-oid="_0b-o2p"
-      >
-        <div
-          class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
-          onClick$={handleJump}
-          data-oid="87svyov"
-        >
-          {/* Game Logo */}
-          <Image
-            src="/images/logo.png"
-            alt="Flappy Bird Logo"
-            width={180}
-            height={180}
-            class="absolute top-2 left-1/2 transform -translate-x-1/2 z-50"
-            data-oid="gg7y7qz"
-          />
+    <div class="relative w-[800px] h-[600px] bg-sky-400 overflow-hidden mx-auto select-none">
+      {/* Background music */}
+      <audio id="bg-music" src="/sounds/bg-music.mp3" loop />
+      {/* Point sound */}
+      <audio id="point-sound" src="/sounds/point.mp3" />
 
-          {/* Clouds */}
-          <Image
-            src="/images/cloud.png"
-            alt="Cloud"
-            width={130}
-            height={130}
-            class="absolute right-8 top-24 opacity-50"
-            data-oid="-20:i4a"
-          />
+      {/* Pipes */}
+      {pipes.value.map((pipe, idx) => (
+        <PipeComponent key={idx} {...pipe} />
+      ))}
 
-          <Image
-            src="/images/cloud.png"
-            alt="Cloud"
-            width={90}
-            height={90}
-            class="absolute left-6 top-7 opacity-50"
-            data-oid="7ohu3j7"
-          />
+      {/* Bird */}
+      <Image
+        src={selectedBird.value}
+        alt="Bird"
+        width={40}
+        height={40}
+        style={{
+          position: "absolute",
+          left: "100px",
+          top: `${birdPosition.value}px`,
+          transition: "top 0.02s linear",
+          zIndex: 10,
+        }}
+        onClick$={() => handleJump()}
+      />
 
-          {/* Bird */}
-          <div
-            class="absolute w-40 h-40 left-[100px]"
-            style={{ top: `${birdPosition.value}px` }}
-            data-oid="7y.v2n8"
-          >
-            <Image
-              src="/images/blue-bird.png"
-              alt="Flappy Bird"
-              class={`${gameOver.value ? "z-0" : "z-50"}`}
-              width={40}
-              height={40}
-              data-oid="rqq30.5"
-            />
-          </div>
+      {/* Score */}
+      <GameScore score={score} />
 
-          {/* Pipes */}
-          {pipes.value.map((pipe, index) => (
-            <div key={index} data-oid="civ_d-y">
-              <PipeComponent {...pipe} data-oid="hvic619" />
-            </div>
-          ))}
+      {/* Game Start Screen */}
+      {!gameStarted.value && !gameOver.value && (
+        <GameStartScreen
+          onStart={startGame}
+          onSelectCharacter={$(() => {
+            showCharacterSelection.value = true;
+          })}
+        />
+      )}
 
-          {/* Game score shown during the game */}
-          <GameScore score={score} data-oid="-2ge_.1" />
+      {/* Game Over Screen */}
+      {gameOver.value && (
+        <GameOverScreen
+          score={score.value}
+          onRestart={$(() => startGame())}
+          onSelectCharacter={$(() => {
+            showCharacterSelection.value = true;
+          })}
+        />
+      )}
 
-          {/* Start screen */}
-          {!gameStarted.value && (
-            <GameStartScreen onStart={startGame} data-oid="fphxylu" />
-          )}
-
-          {/* Game over screen */}
-          {gameOver.value && (
-            <>
-              <Image
-                src="/images/settings.svg"
-                alt="Settings"
-                width={40}
-                height={40}
-                class="absolute bottom-3 right-4 z-50 hover:scale-110 transition-transform duration-200 cursor-pointer"
-                data-oid="eeo2jak"
-              />
-
-              <GameOverScreen
-                onRestart={startGame}
-                score={score.value}
-                data-oid="8yjkizh"
-              />
-            </>
-          )}
-
-          {/* Background music and sound effects */}
-          <audio
-            id="bg-music"
-            src="/music/background-music.mp3"
-            loop
-            hidden
-            data-oid="0mc6h77"
-          />
-
-          <audio
-            id="point-sound"
-            src="/music/coin-effect.mp3"
-            hidden
-            volume={0.2}
-            data-oid="mbw1q0u"
-          />
-        </div>
-      </div>
-    </>
+      {/* Character Selection */}
+      {showCharacterSelection.value && (
+        <CharacterSelection
+          selectedBird={selectedBird.value}
+          onSelect={(bird: string) => {
+            selectedBird.value = bird;
+            showCharacterSelection.value = false;
+          }}
+        />
+      )}
+    </div>
   );
-});
+}
+);
