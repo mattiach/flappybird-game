@@ -5,8 +5,9 @@ import type { Pipe } from "@/interfaces/const";
 export default component$((pipe: Pipe) => {
   return (
     <>
+      {/* Pipe - TOP */}
       <div
-        class="absolute bg-green-600 border-2 border-green-700"
+        class="absolute bg-green-600 border-2 rounded-b-sm"
         style={{
           left: `${pipe.x}px`,
           top: "0px",
@@ -14,10 +15,15 @@ export default component$((pipe: Pipe) => {
           height: `${pipe.topHeight}px`,
         }}
       >
-        <div class="absolute bottom-0 left-0 right-0 h-4 bg-green-600"></div>
+        {/* Darker rounded border */}
+        <div
+          class="absolute bottom-0 left-0 right-0 h-4 bg-green-700 rounded-b-sm border-t-2 border-green-700"
+        ></div>
       </div>
+
+      {/* Pipe - BOTTOM */}
       <div
-        class="absolute bg-green-600 border-2 border-green-700"
+        class="absolute bg-green-600 border-2 border-green-700 rounded-t-sm"
         style={{
           left: `${pipe.x}px`,
           top: `${pipe.bottomY}px`,
@@ -25,7 +31,10 @@ export default component$((pipe: Pipe) => {
           height: `${600 - pipe.bottomY}px`,
         }}
       >
-        <div class="absolute top-0 left-0 right-0 h-4 bg-green-600"></div>
+        {/* Darker rounded border */}
+        <div
+          class="absolute top-0 left-0 right-0 h-4 bg-green-700 rounded-t-sm border-b-2 border-green-700"
+        ></div>
       </div>
     </>
   );

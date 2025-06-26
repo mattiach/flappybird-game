@@ -9,6 +9,8 @@ import { Image } from "@unpic/qwik";
 import type { Hitbox, Pipe } from "@/interfaces/const";
 import { settings } from "@/settings/game.settings";
 import { handleJumpFn, keyListenerFn, startGameFn } from "@/functions/const";
+
+// components
 import GameOverScreen from "@/components/GameOverScreen";
 import GameStartScreen from "@/components/GameStartScreen";
 import GameScore from "@/components/GameScore";
@@ -22,7 +24,12 @@ export default component$(() => {
   const birdPosition = useSignal(250);
   const birdVelocity = useSignal(0);
   const pipes = useSignal<Pipe[]>([]);
-  const selectedBird = useSignal("/images/blue-bird.png");
+  const selectedBird = useSignal(
+    typeof window !== "undefined" && localStorage.getItem("selectedBird")
+      ? localStorage.getItem("selectedBird")!
+      : "/images/blue-bird.png"
+  );
+
   const showCharacterSelection = useSignal(false);
 
   // Function to start the game
@@ -48,10 +55,16 @@ export default component$(() => {
   );
 
   // Add event listeners for keydown events
-  useVisibleTask$(({ cleanup }) => {
+  useVisibleTask$(({ cleanup, track }) => {
     window.focus();
     window.addEventListener("keydown", keyListener);
     cleanup(() => window.removeEventListener("keydown", keyListener));
+
+    // Track the selected bird to update localStorage
+    track(() => selectedBird.value);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedBird", selectedBird.value);
+    }
   });
 
   // Game loop and logic
@@ -130,67 +143,103 @@ export default component$(() => {
   });
 
   return (
-    <div class="relative w-[800px] h-[600px] bg-sky-400 overflow-hidden mx-auto select-none border-4 border-white rounded-lg shadow-lg">
-      {/* Background music */}
-      <audio id="bg-music" src="/sounds/bg-music.mp3" loop />
-      {/* Point sound */}
-      <audio id="point-sound" src="/sounds/point.mp3" />
-
-      {/* Pipes */}
-      {pipes.value.map((pipe, idx) => (
-        <PipeComponent key={idx} {...pipe} />
-      ))}
-
-      {/* Bird */}
-      <Image
-        src={selectedBird.value}
-        alt="Bird"
-        width={40}
-        height={40}
-        style={{
-          position: "absolute",
-          left: "100px",
-          top: `${birdPosition.value}px`,
-          transition: "top 0.02s linear",
-          zIndex: 10,
-        }}
-        onClick$={() => handleJump()}
-      />
-
-      {/* Score */}
-      <GameScore score={score} />
-
-      {/* Game Start Screen */}
-      {!gameStarted.value && !gameOver.value && (
-        <GameStartScreen
-          onStart={startGame}
-          onSelectCharacter={$(() => {
-            showCharacterSelection.value = true;
-          })}
+    <>
+      <div class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
+        onClick$={handleJump}
+      >
+        {/* Game Logo */}
+        <Image
+          src="/images/logo.png"
+          alt="Flappy Bird Logo"
+          width={200}
+          height={200}
+          class="absolute top-2 left-1/2 transform -translate-x-1/2 z-50"
         />
-      )}
 
-      {/* Game Over Screen */}
-      {gameOver.value && (
-        <GameOverScreen
-          score={score.value}
-          onRestart={$(() => startGame())}
-          onSelectCharacter={$(() => {
-            showCharacterSelection.value = true;
-          })}
+        {/* Clouds */}
+        <Image
+          src="/images/cloud.png"
+          alt="Cloud"
+          width={130}
+          height={130}
+          class="absolute right-8 top-24 opacity-50"
         />
-      )}
+        <Image
+          src="/images/cloud.png"
+          alt="Cloud"
+          width={90}
+          height={90}
+          class="absolute left-6 top-7 opacity-50"
+        />
 
-      {/* Character Selection */}
-      {showCharacterSelection.value && (
-        <CharacterSelection
-          selectedBird={selectedBird.value}
-          onSelect={(bird: string) => {
-            selectedBird.value = bird;
-            showCharacterSelection.value = false;
+        {/* Pipes */}
+        {pipes.value.map((pipe, idx) => (
+          <PipeComponent key={idx} {...pipe} />
+        ))}
+
+        {/* Bird */}
+        <Image
+          src={selectedBird.value}
+          alt="Bird"
+          width={40}
+
+          height={40}
+          style={{
+            position: "absolute",
+            left: "100px",
+            top: `${birdPosition.value}px`,
+            transition: "top 0.02s linear",
+            zIndex: 10,
           }}
+          class={`${gameStarted ? 'levitate' : 'animate-none'}`}
+          onClick$={() => handleJump()}
         />
-      )}
-    </div>
+
+        {/* Score */}
+        <GameScore score={score} />
+
+        {/* Game Start Screen */}
+        {!gameStarted.value && !gameOver.value && (
+          <GameStartScreen
+            onStart={startGame}
+            onSelectCharacter={$(() => {
+              showCharacterSelection.value = true;
+              if (typeof window !== "undefined") {
+                localStorage.setItem("selectedBird", selectedBird.value);
+              }
+            })}
+          />
+        )}
+
+        {/* Game Over Screen */}
+        {gameOver.value && (
+          <GameOverScreen
+            score={score.value}
+            onRestart={$(() => startGame())}
+            onSelectCharacter={$(() => {
+              showCharacterSelection.value = true;
+              if (typeof window !== "undefined") {
+                localStorage.setItem("selectedBird", selectedBird.value);
+              }
+            })}
+          />
+        )}
+
+        {/* Character Selection */}
+        {showCharacterSelection.value && (
+          <CharacterSelection
+            selectedBird={selectedBird.value}
+            onSelect={(bird: string) => {
+              selectedBird.value = bird;
+              showCharacterSelection.value = false;
+            }}
+          />
+        )}
+
+        {/* Background music and sound effects */}
+        <audio id="bg-music" src="/music/background-music.mp3" loop hidden />
+        <audio id="point-sound" src="/music/coin-effect.mp3" hidden volume={0.2} />
+      </div>
+    </>
   );
 });
