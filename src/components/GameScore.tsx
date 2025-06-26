@@ -1,4 +1,4 @@
-import { component$, type Signal } from '@builder.io/qwik';
+import { component$, type Signal } from "@builder.io/qwik";
 
 interface GameScoreProps {
   score: Signal<number>;

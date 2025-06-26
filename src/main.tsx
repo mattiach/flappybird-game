@@ -1,6 +1,6 @@
-import '@builder.io/qwik/qwikloader.js';
-import { render } from '@builder.io/qwik';
-import '@/styles/global.css';
-import App from '@/app';
+import "@builder.io/qwik/qwikloader.js";
+import { render } from "@builder.io/qwik";
+import "@/styles/global.css";
+import App from "@/app";
 
-render(document.getElementById('app') as HTMLElement, <App />)
+render(document.getElementById("app") as HTMLElement, <App />);
