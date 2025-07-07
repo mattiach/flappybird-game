@@ -7,12 +7,24 @@ export const settings = {
 };
 
 export const BIRD_OPTIONS = [
-  { name: "Bird 1", image: "/images/bird1.png" },
-  { name: "Bird 2", image: "/images/bird2.webp" },
-  { name: "Bird 3", image: "/images/bird3.png" },
-  { name: "Bird 4", image: "/images/bird4.png" },
-  { name: "Bird 5", image: "/images/bird5.png" },
-  { name: "Bird 6", image: "/images/bird6.png" },
-  { name: "Bird 7", image: "/images/bird7.png" },
-  { name: "Bird 8", image: "/images/bird8.png" },
-];
+  { name: "Yellow Flappy Bird", image: "/images/characters/bird1.png" },
+  { name: "Red Flappy Bird", image: "/images/characters/bird2.png" },
+  { name: "Blue Flappy Bird", image: "/images/characters/bird3.png" },
+  { name: "Spiedino", image: "/images/characters/bird4.png" },
+  { name: "Rosetta", image: "/images/characters/bird5.png" },
+  { name: "Derek", image: "/images/characters/bird6.png" },
+  { name: "Dizzy Derek", image: "/images/characters/bird7.png" },
+  { name: "Richard", image: "/images/characters/bird8.png" },
+  { name: "Primadonna", image: "/images/characters/bird9.png" },
+  { name: "Ronan", image: "/images/characters/bird10.png" },
+  { name: "Conon", image: "/images/characters/bird11.png" },
+  { name: "Romeo", image: "/images/characters/bird12.png" },
+  { name: "Terence", image: "/images/characters/bird13.png" },
+  { name: "Jay", image: "/images/characters/bird14.png" },
+  { name: "Chuck", image: "/images/characters/bird15.png" },
+  { name: "Zappo", image: "/images/characters/bird16.png" },
+  { name: "Ninja Doodle", image: "/images/characters/bird17.png" },
+  { name: "Il Capitano", image: "/images/characters/bird18.png" },
+  { name: "King Arthur", image: "/images/characters/bird19.png" },
+  { name: "Doge", image: "/images/characters/bird20.png" },
+]
