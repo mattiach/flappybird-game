@@ -8,6 +8,8 @@ FlappyBird Game is a fun and challenging browser game. Built with Qwik.js, it de
 ## Game Preview
 <img src="https://i.postimg.cc/1596syks/app-preview.png" alt="Game preview" width="600"/>
 
+<img src="https://i.postimg.cc/1596syks/app-preview.png" alt="Game characters" width="600"/>
+
 ## Getting Started 
 Clone the repository:
 ```
