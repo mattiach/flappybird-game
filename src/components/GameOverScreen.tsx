@@ -13,7 +13,7 @@ export default component$<GameOverScreenProps>(({
 }) => {
   return (
     <>
-      <div class="absolute inset-0 flex items-center justify-center bg-black/50">
+      <div class="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
         <div class="bg-white p-8 rounded-lg text-center">
           <h2 class="text-3xl font-bold mb-4">Game Over</h2>
           <p class="text-lg mb-6">Score: {score}</p>

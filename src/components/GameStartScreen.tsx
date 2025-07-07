@@ -8,7 +8,7 @@ interface GameStartScreenProps {
 export default component$<GameStartScreenProps>(({ onStart, onSelectCharacter }) => {
   return (
     <>
-      <div class="absolute inset-0 flex items-center justify-center bg-black/50">
+      <div class="absolute inset-0 flex items-center justify-center bg-black/50 z-50">
         <div class="bg-white p-6 rounded-lg text-center">
           <h2 class="text-2xl font-bold mb-4">FlappyBird</h2>
           <p class="mb-4">Press SPACE or click to jump after starting</p>
