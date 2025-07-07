@@ -39,3 +39,6 @@ Run the application on [localhost:3000](http://localhost:3000/) and enjoy the ga
 - TypeScript
 - Tailwind
 - Vite.js
+
+
+<img src="https://i.postimg.cc/0j6Jcp3F/app-preview.png" alt="Game preview" width="600"/>
