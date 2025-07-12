@@ -16,7 +16,7 @@ export function keyListenerFn(
   birdVelocity: Signal<number>,
 ) {
   return (e: KeyboardEvent) => {
-    if (e.code === 'Space') {
+    if (e.code === "Space") {
       if (!gameStarted.value) {
         startGame();
       } else if (!gameOver.value) {
@@ -67,7 +67,7 @@ export function startGameFn(
     if (audio && audio.paused) {
       audio.volume = 0.5;
       audio.play().catch((err) => {
-        console.warn('Audio play failed:', err);
+        console.warn("Audio play failed:", err);
       });
     }
 
@@ -79,4 +79,3 @@ export function startGameFn(
     pipes.value = [];
   });
 }
-

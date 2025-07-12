@@ -16,9 +16,7 @@ export default component$((pipe: Pipe) => {
         }}
       >
         {/* Darker rounded border */}
-        <div
-          class="absolute bottom-0 left-0 right-0 h-4 bg-green-700 rounded-b-sm border-t-2 border-green-800"
-        ></div>
+        <div class="absolute bottom-0 left-0 right-0 h-4 bg-green-700 rounded-b-sm border-t-2 border-green-800"></div>
       </div>
 
       {/* Pipe - BOTTOM */}
@@ -32,9 +30,7 @@ export default component$((pipe: Pipe) => {
         }}
       >
         {/* Darker rounded border */}
-        <div
-          class="absolute top-0 left-0 right-0 h-4 bg-green-700 rounded-t-sm border-t-2 border-green-800"
-        ></div>
+        <div class="absolute top-0 left-0 right-0 h-4 bg-green-700 rounded-t-sm border-t-2 border-green-800"></div>
       </div>
     </>
   );

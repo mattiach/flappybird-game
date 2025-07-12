@@ -4,9 +4,10 @@ export const settings = {
   pipeWidth: 70,
   pipeGap: 160,
   pipeSpeed: 5,
+  defaultCharacter: "/images/characters/bird1.png",
 };
 
-export const BIRD_OPTIONS = [
+export const CHARACTERS_OPTIONS = [
   { name: "Yellow Flappy Bird", image: "/images/characters/bird1.png" },
   { name: "Red Flappy Bird", image: "/images/characters/bird2.png" },
   { name: "Blue Flappy Bird", image: "/images/characters/bird3.png" },
@@ -27,4 +28,4 @@ export const BIRD_OPTIONS = [
   { name: "Il Capitano", image: "/images/characters/bird18.png" },
   { name: "King Arthur", image: "/images/characters/bird19.png" },
   { name: "Doge", image: "/images/characters/bird20.png" },
-]
+];

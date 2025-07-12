@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 // plugins
-import { qwikVite } from '@builder.io/qwik/optimizer';
+import { qwikVite } from "@builder.io/qwik/optimizer";
 import tailwindcss from "@tailwindcss/vite";
-import tsconfigPaths from 'vite-tsconfig-paths';
+import tsconfigPaths from "vite-tsconfig-paths";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -18,4 +18,4 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
   },
-})
+});

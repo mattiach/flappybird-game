@@ -27,7 +27,7 @@ export default component$(() => {
   const selectedBird = useSignal(
     typeof window !== "undefined" && localStorage.getItem("selectedBird")
       ? localStorage.getItem("selectedBird")!
-      : "/images/blue-bird.png"
+      : settings.defaultCharacter,
   );
 
   const showCharacterSelection = useSignal(false);
@@ -68,21 +68,27 @@ export default component$(() => {
   });
 
   // Game loop and logic
-  useTask$(({ track }) => {
+  useTask$(({ track, cleanup }) => {
     track(() => gameStarted.value);
     track(() => gameOver.value);
-    track(() => birdPosition.value);
-    track(() => birdVelocity.value);
-    track(() => pipes.value);
 
     if (!gameStarted.value || gameOver.value) return;
 
-    // This const is used to control the game loop, music, and game logic
+    let lastTime = performance.now();
+
     const interval = setInterval(() => {
-      birdVelocity.value += settings.gravity;
-      birdPosition.value += birdVelocity.value;
+      const now = performance.now();
+      const delta = (now - lastTime) / 16.67; // 60 FPS
+      lastTime = now;
+
+      birdVelocity.value += settings.gravity * delta;
+      birdPosition.value += birdVelocity.value * delta;
+
       pipes.value = pipes.value
-        .map((pipe) => ({ ...pipe, x: pipe.x - settings.pipeSpeed }))
+        .map((pipe) => ({
+          ...pipe,
+          x: pipe.x - settings.pipeSpeed * delta,
+        }))
         .filter((pipe) => pipe.x + settings.pipeWidth > 0);
 
       if (
@@ -90,22 +96,19 @@ export default component$(() => {
         pipes.value[pipes.value.length - 1].x < 400
       ) {
         const gapPosition = Math.floor(Math.random() * 300) + 100;
-        pipes.value = [
-          ...pipes.value,
-          {
-            x: 800,
-            topHeight: gapPosition,
-            bottomY: gapPosition + settings.pipeGap,
-            passed: false,
-          },
-        ];
+        pipes.value.push({
+          x: 800,
+          topHeight: gapPosition,
+          bottomY: gapPosition + settings.pipeGap,
+          passed: false,
+        });
       }
 
       const Hitbox: Hitbox = {
         top: birdPosition.value,
         bottom: birdPosition.value + 40,
         left: 100,
-        right: 100 + 40,
+        right: 140,
       };
 
       if (Hitbox.top <= 0 || Hitbox.bottom >= 600) {
@@ -119,32 +122,35 @@ export default component$(() => {
           Hitbox.right > pipe.x && Hitbox.left < pipe.x + settings.pipeWidth;
         const hitTop = Hitbox.top < pipe.topHeight;
         const hitBottom = Hitbox.bottom > pipe.bottomY;
+
         if (withinX && (hitTop || hitBottom)) {
           gameOver.value = true;
           clearInterval(interval);
           return;
         }
+
         if (!pipe.passed && pipe.x + settings.pipeWidth < Hitbox.left) {
           pipe.passed = true;
           score.value += 1;
+
           const pointSound = document.getElementById(
             "point-sound",
-          ) as HTMLAudioElement | null;
+          ) as HTMLAudioElement;
           if (pointSound) {
             pointSound.currentTime = 0;
-            pointSound.play().catch((err) => {
-              console.warn("Point sound play failed:", err);
-            });
+            pointSound.play().catch((err) => console.warn("Sound error:", err));
           }
         }
       }
     }, 20);
-    return () => clearInterval(interval);
+
+    cleanup(() => clearInterval(interval));
   });
 
   return (
     <>
-      <div class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
+      <div
+        class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
         onClick$={handleJump}
       >
         {/* Game Logo */}
@@ -182,7 +188,6 @@ export default component$(() => {
           src={selectedBird.value}
           alt="Bird"
           width={40}
-
           height={40}
           style={{
             position: "absolute",
@@ -191,7 +196,7 @@ export default component$(() => {
             transition: "top 0.02s linear",
             zIndex: 10,
           }}
-          class={`${gameStarted ? 'levitate' : 'animate-none'}`}
+          class={`${gameStarted ? "levitate" : "animate-none"}`}
           onClick$={() => handleJump()}
         />
 
@@ -238,7 +243,12 @@ export default component$(() => {
 
         {/* Background music and sound effects */}
         <audio id="bg-music" src="/music/background-music.mp3" loop hidden />
-        <audio id="point-sound" src="/music/coin-effect.mp3" hidden volume={0.05} />
+        <audio
+          id="point-sound"
+          src="/music/coin-effect.mp3"
+          hidden
+          volume={0.05}
+        />
       </div>
     </>
   );

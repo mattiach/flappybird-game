@@ -3,20 +3,25 @@
 </div>
 
 ## Welcome to FlappyBird Game!
+
 FlappyBird Game is a fun and challenging browser game. Built with Qwik.js, it delivers fast performance and a smooth gaming experience directly in your browser.
 
 ## Game Preview
+
 <img src="https://i.postimg.cc/1596syks/app-preview.png" alt="Game preview" width="600"/>
 
 <img src="https://i.postimg.cc/NFW2VKvM/app-preview.png" alt="Game characters" width="600"/>
 
-## Getting Started 
+## Getting Started
+
 Clone the repository:
+
 ```
     git clone https://github.com/mattiach/flappybird-game.git
 ```
 
 Install dependencies:
+
 ```shell
     pnpm install
     # or
@@ -26,6 +31,7 @@ Install dependencies:
 ```
 
 Run the application on [localhost:3000](http://localhost:3000/) and enjoy the game!
+
 ```shell
     pnpm run dev
     # or
@@ -35,10 +41,10 @@ Run the application on [localhost:3000](http://localhost:3000/) and enjoy the ga
 ```
 
 ## Technologies
+
 - Qwik.js
 - TypeScript
 - Tailwind
 - Vite.js
-
 
 <img src="https://i.postimg.cc/0j6Jcp3F/app-preview.png" alt="Game preview" width="600"/>
