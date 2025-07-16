@@ -1,4 +1,4 @@
-import type { Pipe } from "@/interfaces/const";
+import type { IGameSettings, Pipe } from "@/interfaces/const";
 import { settings } from "@/settings/game.settings";
 import { $, type Signal } from "@builder.io/qwik";
 
@@ -17,9 +17,9 @@ export function keyListenerFn(
 ) {
   return (e: KeyboardEvent) => {
     if (e.code === "Space") {
-      if (!gameStarted.value) {
+      if (!gameStarted.value || gameOver.value) {
         startGame();
-      } else if (!gameOver.value) {
+      } else {
         birdVelocity.value = settings.jumpStrength;
       }
     }
@@ -78,4 +78,40 @@ export function startGameFn(
     birdVelocity.value = 0;
     pipes.value = [];
   });
+}
+
+
+
+/**
+ * Detects the browser from the userAgent string and applies
+ * specific game setting adjustments to improve performance
+ * on certain browsers.
+ * 
+ * @param userAgent - The browser's userAgent string.
+ * @param settings - The default game settings.
+ * @param setBrowser - Callback to update the detected browser name.
+ * @param setGameSettings - Callback to update the adjusted game settings.
+ */
+export function detectBrowserSettings(
+  userAgent: string,
+  settings: IGameSettings,
+  setBrowser: (browserName: string) => void,
+  setGameSettings: (newSettings: Partial<IGameSettings>) => void
+) {
+  if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+    setBrowser("Chrome");
+  } else if (userAgent.includes("Firefox")) {
+    setBrowser("Firefox");
+    // Firefox fix performance
+    setGameSettings({
+      gravity: settings.gravity * 0.75,
+      pipeSpeed: settings.pipeSpeed * 0.85,
+    });
+  } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+    setBrowser("Safari");
+  } else if (userAgent.includes("Edg")) {
+    setBrowser("Edge");
+  } else {
+    setBrowser("Unknown Browser");
+  }
 }

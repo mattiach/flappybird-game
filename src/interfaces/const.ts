@@ -11,3 +11,12 @@ export interface Hitbox {
   left: number;
   right: number;
 }
+
+export interface IGameSettings {
+  gravity: number;
+  jumpStrength: number;
+  pipeWidth: number;
+  pipeGap: number;
+  pipeSpeed: number;
+  defaultCharacter: string;
+};

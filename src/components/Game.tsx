@@ -8,7 +8,7 @@ import {
 import { Image } from "@unpic/qwik";
 import type { Hitbox, Pipe } from "@/interfaces/const";
 import { settings } from "@/settings/game.settings";
-import { handleJumpFn, keyListenerFn, startGameFn } from "@/functions/const";
+import { detectBrowserSettings, handleJumpFn, keyListenerFn, startGameFn } from "@/functions/const";
 
 // components
 import GameOverScreen from "@/components/GameOverScreen";
@@ -29,8 +29,23 @@ export default component$(() => {
       ? localStorage.getItem("selectedBird")!
       : settings.defaultCharacter,
   );
+  const browser = useSignal('Unknown Browser');
+  const gameSettings = useSignal({ ...settings });
 
   const showCharacterSelection = useSignal(false);
+
+  useVisibleTask$(() => {
+    if (typeof window !== "undefined") {
+      detectBrowserSettings(
+        navigator.userAgent,
+        settings,
+        (name) => (browser.value = name),
+        (newSettings) => {
+          gameSettings.value = { ...gameSettings.value, ...newSettings };
+        }
+      );
+    }
+  });
 
   // Function to start the game
   const startGame = startGameFn(
@@ -81,15 +96,15 @@ export default component$(() => {
       const delta = (now - lastTime) / 16.67; // 60 FPS
       lastTime = now;
 
-      birdVelocity.value += settings.gravity * delta;
+      birdVelocity.value += gameSettings.value.gravity * delta;
       birdPosition.value += birdVelocity.value * delta;
 
       pipes.value = pipes.value
         .map((pipe) => ({
           ...pipe,
-          x: pipe.x - settings.pipeSpeed * delta,
+          x: pipe.x - gameSettings.value.pipeSpeed * delta,
         }))
-        .filter((pipe) => pipe.x + settings.pipeWidth > 0);
+        .filter((pipe) => pipe.x + gameSettings.value.pipeWidth > 0);
 
       if (
         pipes.value.length === 0 ||
