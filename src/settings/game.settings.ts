@@ -1,4 +1,6 @@
 export const settings = {
+  bird_position: 250,
+  bird_velocity: 22.75,
   gravity: 0.7,
   jumpStrength: -10,
   pipeWidth: 70,

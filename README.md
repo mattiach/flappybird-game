@@ -46,3 +46,8 @@ Run the application on [localhost:3000](http://localhost:3000/) and enjoy the ga
 - TypeScript
 - Tailwind
 - Vite.js
+
+<hr />
+
+A special thanks to Timplaru Emil for the
+<a href="https://it.vecteezy.com/membri/emiltimplaru">coin image</a>!

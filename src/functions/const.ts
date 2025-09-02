@@ -7,20 +7,20 @@ import { $, type Signal } from "@builder.io/qwik";
  * @param gameStarted - Signal indicating if the game has started.
  * @param startGame - Function to start the game.
  * @param gameOver - Signal indicating if the game is over.
- * @param birdVelocity - Signal representing the bird's vertical velocity.
+ * @param birdSpeed - Signal representing the bird's vertical velocity.
  */
 export function keyListenerFn(
   gameStarted: Signal<boolean>,
   startGame: () => void,
   gameOver: Signal<boolean>,
-  birdVelocity: Signal<number>,
+  birdSpeed: Signal<number>,
 ) {
   return (e: KeyboardEvent) => {
     if (e.code === "Space") {
       if (!gameStarted.value || gameOver.value) {
         startGame();
       } else {
-        birdVelocity.value = settings.jumpStrength;
+        birdSpeed.value = settings.jumpStrength;
       }
     }
   };
@@ -30,16 +30,16 @@ export function keyListenerFn(
  * Function to handle the jump action of the bird.
  * @param gameStarted - Signal indicating if the game has started.
  * @param gameOver - Signal indicating if the game is over.
- * @param birdVelocity - Signal representing the bird's vertical velocity.
+ * @param birdSpeed - Signal representing the bird's vertical velocity.
  */
 export function handleJumpFn(
   gameStarted: Signal<boolean>,
   gameOver: Signal<boolean>,
-  birdVelocity: Signal<number>,
+  birdSpeed: Signal<number>,
 ) {
   return $(() => {
     if (!gameStarted.value || gameOver.value) return;
-    birdVelocity.value = settings.jumpStrength;
+    birdSpeed.value = settings.jumpStrength;
   });
 }
 
@@ -49,7 +49,7 @@ export function handleJumpFn(
  * @param gameOver - Signal indicating if the game is over.
  * @param score - Signal representing the current score.
  * @param birdPosition - Signal representing the bird's vertical position.
- * @param birdVelocity - Signal representing the bird's vertical velocity.
+ * @param birdSpeed - Signal representing the bird's vertical velocity.
  * @param pipes - Signal containing the list of pipes in the game.
  * @param audioHtml - ID of the HTML audio element for background music.
  */
@@ -58,7 +58,7 @@ export function startGameFn(
   gameOver: Signal<boolean>,
   score: Signal<number>,
   birdPosition: Signal<number>,
-  birdVelocity: Signal<number>,
+  birdSpeed: Signal<number>,
   pipes: Signal<Pipe[]>,
   audioHtml: string,
 ) {
@@ -75,7 +75,7 @@ export function startGameFn(
     gameOver.value = false;
     score.value = 0;
     birdPosition.value = 150;
-    birdVelocity.value = 0;
+    birdSpeed.value = 0;
     pipes.value = [];
   });
 }
