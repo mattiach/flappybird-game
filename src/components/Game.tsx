@@ -2,7 +2,6 @@ import {
   $,
   component$,
   useSignal,
-  useTask$,
   useVisibleTask$,
 } from "@builder.io/qwik";
 import { Image } from "@unpic/qwik";
@@ -94,7 +93,7 @@ export default component$(() => {
   });
 
   // Game loop
-  useTask$(({ track, cleanup }) => {
+  useVisibleTask$(({ track, cleanup }) => {
     track(() => gameStarted.value);
     track(() => gameOver.value);
 
@@ -200,6 +199,32 @@ export default component$(() => {
         class="relative w-full max-w-[800px] h-[600px] bg-blue-300 border-4 border-white rounded-lg overflow-hidden cursor-pointer"
         onClick$={handleJump}
       >
+
+        {/* Game Logo */}
+        <Image
+          src="/images/logo.png"
+          alt="Flappy Bird Logo"
+          width={200}
+          height={200}
+          class="absolute top-2 left-1/2 transform -translate-x-1/2 z-40"
+        />
+
+        {/* Clouds */}
+        <Image
+          src="/images/cloud.png"
+          alt="Cloud"
+          width={130}
+          height={130}
+          class="absolute right-8 top-24 opacity-50"
+        />
+        <Image
+          src="/images/cloud.png"
+          alt="Cloud"
+          width={90}
+          height={90}
+          class="absolute left-6 top-7 opacity-50"
+        />
+
         {/* Pipes */}
         {pipes.value.map((pipe, idx) => (
           <PipeComponent key={idx} {...pipe} />
